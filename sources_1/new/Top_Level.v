@@ -21,20 +21,21 @@
 
 
 module Top_Level(
-    input clk, rst, //stackQueue,
+    input clk, rst, stackQueue,
     input [15:0] switches,
     input [4:0] btns,
     output empty, full,
     output [7:0] anode, 
-    output [7:0] cathode
+    output [7:0] cathode,
+    output stackQueueLed
     //output [15:0] LED
     );
     wire [31:0] aluY, sseg, aluA, aluB;
     wire [4:0] btn_db;
     
-    
-    wire stackQueue;    
-    assign stackQueue = 1'b0;
+    assign stackQueueLed = stackQueue;
+    //wire stackQueue;    
+    //assign stackQueue = 1'b1;
     //assign LED = {aluA[7:0], aluB[7:0]};
     
     //debounce btns
@@ -45,10 +46,10 @@ module Top_Level(
     debounce db4(.clk(clk), .reset(rst), .sw(btns[4]), .db(btn_db[4]));
     
     //alu
-    ALU alu(.A(aluA), .B(aluB), .op(/*btns[4:1]*/btn_db[4:1]), .Y(aluY), .overflow());
+    ALU alu(.A(aluA), .B(aluB), .op(btn_db[4:1]), .Y(aluY), .overflow());
     
     Memory_Controller mc1(.clk(clk), .rst(rst), .stackQueue(stackQueue), .aluY(aluY), .switches(switches), 
-    .btns(/*btns*/btn_db), .sseg(sseg),  .aluA(aluA), .aluB(aluB), .empty(empty), .full(full));
+    .btns(btn_db), .sseg(sseg),  .aluA(aluA), .aluB(aluB), .empty(empty), .full(full));
     
     //sseg
     SSEG sseg1(.clk(clk), .rst(rst), .in(sseg), .anode(anode), .cathode(cathode));

@@ -24,6 +24,94 @@ module Memory(
     input clk, rst, push, pop, stackQueue,
     input [31:0] dataIn,
     output [31:0] stackOut, queueOut,
+    output empty, full
+    );
+    
+    reg [31:0] memory [0:31];
+    reg [4:0] headPtr, basePtr, n_headPtr, n_basePtr;
+    reg [5:0] writeCount, n_writeCount;
+    integer i;
+    
+    assign full = (writeCount == 6'b100000); //32
+    assign empty = ~|writeCount;
+    assign stackOut = (empty)? 32'b0 : memory[(headPtr - 5'b1)];
+    assign queueOut = (empty)? 32'b0 : memory[basePtr];
+    
+    always@(posedge clk, negedge rst)
+    begin
+        if(~rst)
+        begin
+            for(i = 0; i <32; i = i+1)
+                memory[i] <= 32'b0;
+            headPtr <= 5'b0;
+            basePtr <= 5'b0;
+            //n_headPtr <= 5'b0;
+            //n_basePtr <= 5'b0;
+            //empty <= 1'b1;
+            //full <= 1'b0;
+            writeCount <= 6'b0;
+            //n_empty <=1'b1;
+            //n_full <=1'b0;
+        end
+        else
+        begin
+            headPtr <= n_headPtr;
+            basePtr <= n_basePtr;
+            writeCount <= n_writeCount;
+            //empty <= n_empty;
+            //full <= n_full;
+            if(push && ~full)
+                memory[headPtr] <= dataIn;
+        end
+    end
+    
+    always @(*)
+    begin
+        if(push && ~full)
+        begin                       //write
+            n_headPtr = headPtr + 5'b1;
+            //n_full = (n_headPtr == basePtr);
+            //n_full = ((headPtr+5'b1) == basePtr);
+            //n_empty = 1'b0;
+            n_writeCount = writeCount + 6'b1;
+        end
+        else if(pop && ~empty)
+        begin                       //read
+            if(stackQueue)
+            begin           //queue
+                n_basePtr = basePtr + 5'b1;
+            end
+            else
+            begin           //stack
+                n_headPtr = headPtr - 5'b1;
+            end
+            n_writeCount = writeCount - 6'b1;
+            //two different cases. either the stack aproaches empty from the front (stack) or rear(queue)
+            //n_empty = (stackQueue)?(headPtr == n_basePtr):(n_headPtr == basePtr);
+            //n_empty = (headPtr - 5'b1 == basePtr);
+            //n_full = 1'b0;
+        end
+        else
+        begin                       //no op
+            n_headPtr = headPtr;
+            n_basePtr = basePtr;
+            n_writeCount = writeCount;
+            //n_full = full;
+            //n_empty = empty;
+        end
+    end
+endmodule
+
+
+
+
+
+/*
+
+module Memory(
+    input clk, rst, push, pop, stackQueue,
+    input [31:0] dataIn,
+    output [31:0] stackOut, queueOut,
     output reg empty, full
     );
     
@@ -68,6 +156,7 @@ module Memory(
         if(push && ~full)
         begin                       //write
             n_headPtr = headPtr + 5'b1;
+            //n_full = (n_headPtr == basePtr);
             n_full = ((headPtr+5'b1) == basePtr);
             n_empty = 1'b0;
         end
@@ -81,7 +170,9 @@ module Memory(
             begin           //stack
                 n_headPtr = headPtr - 5'b1;
             end
-            n_empty = (headPtr - 5'b1 == basePtr);
+            //two different cases. either the stack aproaches empty from the front (stack) or rear(queue)
+            n_empty = (stackQueue)?(headPtr == n_basePtr):(n_headPtr == basePtr);
+            //n_empty = (headPtr - 5'b1 == basePtr);
             n_full = 1'b0;
         end
         else
@@ -93,6 +184,14 @@ module Memory(
         end
     end
 endmodule
+
+*/
+
+
+
+
+
+
 
 
 

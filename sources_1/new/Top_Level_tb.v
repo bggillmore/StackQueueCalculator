@@ -70,19 +70,22 @@ initial begin
     
     //add together values as stack
     $display("Begining Stack Adding Test");
-    for(i = 0; i < 31; i = i+1)
+    for(i = 0; i < 40; i = i+1)
     begin
         #20
         btns = 5'b00010;
         #100 //must be greater than number of states (8) in memController * clock period
         btns = 5'b0;
         seriesSum = 0;
-        for(j = 32; j > (30-i); j = j-1)
+        if(i<31)
         begin
-            seriesSum = seriesSum + j;
+            for(j = 32; j > (30-i); j = j-1)
+            begin
+                seriesSum = seriesSum + j;
+            end
+            if(seriesSum !== sseg)
+                $display("Error in stack adding!    sum: %h    sseg: %h ", seriesSum, sseg);
         end
-        if(seriesSum !== sseg)
-            $display("Error in stack adding!    sum: %h    sseg: %h ", seriesSum, sseg);
     end
     
     //reset for queue operations
@@ -114,10 +117,10 @@ initial begin
     
     
     //add together values as queue
-    //Queue adding has been checked manually since finding an algorithm to check queue operation by itteration is suprisingly hard. 
+    //Queue adding has been checked manually since finding an algorithm to check queue operation by itteration is suprisingly hard w/o recursion. 
     //One would need to actually code a fake queue. Seems pointless as i can just verify by the waveform.
     $display("Begining Queue Adding Test");
-    for(i = 0; i < 28; i = i+1)
+    for(i = 0; i < 40; i = i+1)
     begin
         #100
         btns = 5'b00010;
