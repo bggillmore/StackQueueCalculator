@@ -61,9 +61,9 @@ module Memory(
         /*
          *              IMPORTANT!
          *  Do not remove there succ/prev pointers!
-         *  I know the code is more expressive with: 
+         *  know the code is more expressive with: 
          *          nPtr = ptr +/- 5'b1;
-         *  but i'm preventing a race conditon for queue 
+         *  but i'm preventing a prop delay issue in queue 
          *  mode by moving the adder prior to the mux.
          */
         //next pointer values 
