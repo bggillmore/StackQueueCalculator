@@ -27,7 +27,7 @@ module Memory(
     );
     
     reg [31:0] memory [0:31];
-    reg [4:0] headPtr, basePtr, n_headPtr, n_basePtr;
+    reg [4:0] headPtr, basePtr, n_headPtr, n_basePtr, headPtr_succ, basePtr_succ, headPtr_prev;
     reg [5:0] writeCount, n_writeCount;
     integer i;
     
@@ -58,28 +58,39 @@ module Memory(
     
     always @(*)
     begin
+        /*
+         *              IMPORTANT!
+         *  Do not remove there succ/prev pointers!
+         *  I know the code is more expressive with: 
+         *          nPtr = ptr +/- 5'b1;
+         *  but i'm preventing a race conditon for queue 
+         *  mode by moving the adder prior to the mux.
+         */
+        //next pointer values 
+        basePtr_succ = basePtr + 5'b1;
+        headPtr_prev = headPtr - 5'b1;
+        headPtr_succ = headPtr + 5'b1;
+        //keep old values
+        n_headPtr = headPtr;
+        n_basePtr = basePtr;
+        n_writeCount = writeCount;
+
         if(push && ~full)
         begin                       //write
-            n_headPtr = headPtr + 5'b1;
+            n_headPtr = headPtr_succ;
             n_writeCount = writeCount + 6'b1;
         end
         else if(pop && ~empty)
         begin                       //read
             if(stackQueue)
             begin           //queue
-                n_basePtr = basePtr + 5'b1;
+                n_basePtr = basePtr_succ;
             end
             else
             begin           //stack
-                n_headPtr = headPtr - 5'b1;
+                n_headPtr = headPtr_prev;
             end
             n_writeCount = writeCount - 6'b1;
-        end
-        else
-        begin                       //no op
-            n_headPtr = headPtr;
-            n_basePtr = basePtr;
-            n_writeCount = writeCount;
         end
     end
 endmodule
