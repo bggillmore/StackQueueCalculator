@@ -46,10 +46,17 @@ module Top_Level(
     debounce db4(.clk(clk), .reset(rst), .sw(btns[4]), .db(btn_db[4]));
     
     //alu
+<<<<<<< HEAD
     ALU alu(.A(aluA), .B(aluB), .op(btns[4:1]), .Y(aluY), .overflow());
     
     Memory_Controller mc1(.clk(clk), .rst(rst), .stackQueue(stackQueue), .aluY(aluY), .switches(switches), 
     .btns(btns), .sseg(sseg),  .aluA(aluA), .aluB(aluB), .empty(empty), .full(full));
+=======
+    ALU alu(.A(aluA), .B(aluB), .op(btns[4:1]/*btn_db[4:1]*/), .Y(aluY), .overflow());
+    
+    Memory_Controller mc1(.clk(clk), .rst(rst), .stackQueue(stackQueue), .aluY(aluY), .switches(switches), 
+    .btns(btns/*btn_db*/), .sseg(sseg),  .aluA(aluA), .aluB(aluB), .empty(empty), .full(full));
+>>>>>>> parent of 26065d1... Okay i take that back, i forgot to add the btn_db back into top level and when i did it seemed to fix both of my bugs :)... Also the sanity check tb has been added cause its nice to have a simple test bech like that
     
     //sseg
     SSEG sseg1(.clk(clk), .rst(rst), .in(sseg), .anode(anode), .cathode(cathode));
