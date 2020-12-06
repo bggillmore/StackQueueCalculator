@@ -46,10 +46,10 @@ module Top_Level(
     debounce db4(.clk(clk), .reset(rst), .sw(btns[4]), .db(btn_db[4]));
     
     //alu
-    ALU alu(.A(aluA), .B(aluB), .op(btn_db[4:1]), .Y(aluY), .overflow());
+    ALU alu(.A(aluA), .B(aluB), .op(btns[4:1]), .Y(aluY), .overflow());
     
     Memory_Controller mc1(.clk(clk), .rst(rst), .stackQueue(stackQueue), .aluY(aluY), .switches(switches), 
-    .btns(btn_db), .sseg(sseg),  .aluA(aluA), .aluB(aluB), .empty(empty), .full(full));
+    .btns(btns), .sseg(sseg),  .aluA(aluA), .aluB(aluB), .empty(empty), .full(full));
     
     //sseg
     SSEG sseg1(.clk(clk), .rst(rst), .in(sseg), .anode(anode), .cathode(cathode));

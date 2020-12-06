@@ -80,13 +80,14 @@ module Memory_Controller(
             case(state)
                 3'b000:
                 begin   //copy
-                    n_aluA = (stackQueue)?queueOut:stackOut;
+                    n_aluB = (stackQueue)?queueOut:stackOut;
                     n_state = state + 3'b1;
                     n_pop = 1'b0;
                     n_push = 1'b0;
                 end
                 3'b001:
                 begin   //pop
+                    //aluA = (stackQueue)?queueOut:stackOut;
                     n_state = state + 3'b1;
                     n_pop = 1'b1;
                     n_push = 1'b0;
@@ -99,7 +100,7 @@ module Memory_Controller(
                 end
                 3'b011:
                 begin   //copy
-                    n_aluB = (stackQueue)?queueOut:stackOut;
+                    n_aluA = (stackQueue)?queueOut:stackOut;
                     n_state = state + 3'b1;
                     n_pop = 1'b0;
                     n_push = 1'b0;
